@@ -1,6 +1,12 @@
 {
   "name": "@repo/db",
   "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "db:generate": "prisma generate", 
+    "db:migrate": "prisma migrate dev", 
+    "db:deploy": "prisma migrate deploy"
+  }, 
   "devDependencies": {
     "prisma": "^7.9.1"
   },
@@ -9,5 +15,8 @@
     "@prisma/client": "^7.9.1",
     "dotenv": "^16.0.3",
     "pg": "^8.23.0"
-  }
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  } 
 }
