@@ -25,5 +25,10 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "allowScripts": {
+    "prisma@7.9.1": true,
+    "@prisma/engines@7.9.1": true,
+    "@parcel/watcher@2.5.1": true
+  }
 }
