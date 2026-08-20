@@ -1,15 +1,18 @@
 "use client";
 import Link from "next/link";
 import { useActionState } from "react";
-import { signupAction, SignUpState } from "../../../actions/auth";
+import {
+  forgotPasswordAction,
+  ForgotPasswordState,
+} from "../../../actions/auth";
 
-const initialState: SignUpState = { step: "SEND_OTP" };
+const initialState: ForgotPasswordState = { step: "SEND_OTP" };
 
-const STEPS = ["SEND_OTP", "VERIFY_OTP", "SET_PASSWORD"] as const;
+const STEPS = ["SEND_OTP", "RESET_PASSWORD"] as const;
 
-export default function SignupPage() {
+export default function ForgotPasswordPage() {
   const [state, formAction, isPending] = useActionState(
-    signupAction,
+    forgotPasswordAction,
     initialState
   );
 
@@ -23,10 +26,13 @@ export default function SignupPage() {
           {/* Header */}
           <div className="mb-6 text-center">
             <h2 className="text-2xl font-semibold text-slate-900">
-              Create your account
+              Reset your password
             </h2>
             <p className="mt-1 text-sm text-slate-500">
-              Sign up with your phone number
+              {state.step === "SEND_OTP" &&
+                "Enter your phone number to get a reset code"}
+              {state.step === "RESET_PASSWORD" &&
+                "Enter the code and your new password"}
             </p>
           </div>
 
@@ -78,14 +84,21 @@ export default function SignupPage() {
                 disabled={isPending}
                 className="w-full rounded-lg bg-slate-900 text-white font-medium py-2.5 hover:bg-slate-800 active:bg-slate-950 disabled:opacity-60 disabled:cursor-not-allowed transition"
               >
-                {isPending ? "Sending..." : "Send OTP"}
+                {isPending ? "Sending..." : "Send reset code"}
               </button>
             </form>
           )}
 
-          {/* Step 2: Verify OTP */}
-          {state.step === "VERIFY_OTP" && (
+          {/* Step 2: Verify OTP + set new password together */}
+          {state.step === "RESET_PASSWORD" && (
             <form action={formAction} className="flex flex-col gap-4">
+              {/* phoneNumber isn't user-editable here, but the action needs it */}
+              <input
+                type="hidden"
+                name="phoneNumber"
+                value={state.phoneNumber}
+              />
+
               <p className="text-sm text-slate-600">
                 Enter the code sent to{" "}
                 <span className="font-medium text-slate-900">
@@ -112,38 +125,6 @@ export default function SignupPage() {
                 />
               </div>
 
-              <button
-                type="submit"
-                disabled={isPending}
-                className="w-full rounded-lg bg-slate-900 text-white font-medium py-2.5 hover:bg-slate-800 active:bg-slate-950 disabled:opacity-60 disabled:cursor-not-allowed transition"
-              >
-                {isPending ? "Verifying..." : "Verify code"}
-              </button>
-            </form>
-          )}
-
-          {/* Step 3: Set Password */}
-          {state.step === "SET_PASSWORD" && (
-            <form action={formAction} className="flex flex-col gap-4">
-              <div className="flex items-center gap-2 rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2">
-                <svg
-                  className="w-4 h-4 text-emerald-600 shrink-0"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <p className="text-sm text-emerald-700">
-                  Phone verified. Set a password to finish.
-                </p>
-              </div>
-
               <div>
                 <label
                   htmlFor="newPassword"
@@ -157,7 +138,6 @@ export default function SignupPage() {
                   type="password"
                   placeholder="••••••••"
                   required
-                  autoFocus
                   className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-slate-900 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 transition"
                 />
               </div>
@@ -184,15 +164,15 @@ export default function SignupPage() {
                 disabled={isPending}
                 className="w-full rounded-lg bg-slate-900 text-white font-medium py-2.5 hover:bg-slate-800 active:bg-slate-950 disabled:opacity-60 disabled:cursor-not-allowed transition"
               >
-                {isPending ? "Saving..." : "Set password & finish"}
+                {isPending ? "Resetting..." : "Reset password"}
               </button>
             </form>
           )}
         </div>
 
-        {/* Link to sign in */}
+        {/* Link back to login */}
         <p className="mt-6 text-center text-sm text-slate-500">
-          Already have an account?{" "}
+          Remembered your password?{" "}
           <Link
             href="/login"
             className="font-medium text-slate-900 hover:underline"

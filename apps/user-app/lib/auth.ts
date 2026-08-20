@@ -19,6 +19,13 @@ export const auth = betterAuth({
 
         // Add production SMS provider here
       },
+      sendPasswordResetOTP: async ({ phoneNumber, code }, ctx) => {
+        if (process.env.NODE_ENV === "development") {
+          console.log(`[AUTH RESET OTP] To: ${phoneNumber} | Code: ${code}`);
+          return;
+        }
+        // production SMS provider
+      },
       signUpOnVerification: {
         getTempEmail: (phoneNumber) => {
           return `${phoneNumber}@my-site.com`
