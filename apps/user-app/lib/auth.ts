@@ -3,12 +3,13 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { phoneNumber } from "better-auth/plugins";
 // If your Prisma file is located elsewhere, you can change the path
 import { prisma } from "@repo/db";
+import { nextCookies } from "better-auth/next-js";
 
 export const auth = betterAuth({
-    database: prismaAdapter(prisma, {
-        provider: "postgresql",
-    }),
-    plugins: [
+  database: prismaAdapter(prisma, {
+    provider: "postgresql",
+  }),
+  plugins: [
     phoneNumber({
       sendOTP: async ({ phoneNumber, code }, ctx) => {
         if (process.env.NODE_ENV === "development") {
@@ -18,6 +19,16 @@ export const auth = betterAuth({
 
         // Add production SMS provider here
       },
+      signUpOnVerification: {
+        getTempEmail: (phoneNumber) => {
+          return `${phoneNumber}@my-site.com`
+        },
+        //optionally, you can also pass `getTempName` function to generate a temporary name for the user
+        getTempName: (phoneNumber) => {
+          return phoneNumber //by default, it will use the phone number as the name
+        }
+      }
     }),
+    nextCookies()
   ],
 });
