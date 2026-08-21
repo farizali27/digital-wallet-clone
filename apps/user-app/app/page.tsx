@@ -1,7 +1,14 @@
-// apps/web/app/page.tsx
-import { prisma } from "@repo/db";
+import { auth } from "../lib/auth";
+import { headers } from "next/headers";
+import { Appbar } from "@repo/ui/Appbar";
+import { signOutAction } from "../actions/auth";
 
 export default async function Home() {
-  const user = await prisma.user.findFirst();
-  return <div>{user?.name ?? "No user added yet"}</div>;
+  const session = await auth.api.getSession({ headers: await headers() });
+
+  return (
+    <div>
+      <Appbar user={session?.user} onSignoutAction={signOutAction} />
+    </div>
+  );
 }

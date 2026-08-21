@@ -191,3 +191,8 @@ export async function forgotPasswordAction(
   }
   return prevState
 }
+
+export async function signOutAction() {
+  await auth.api.signOut({ headers: await headers() });
+  redirect("/login");
+}
